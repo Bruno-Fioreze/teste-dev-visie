@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API CRUD</title> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" >
+    <script defer src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/sweetalert2@11.js') }}"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card col-md-12" style="padding: 0;">
+            <div class="card-header col-md-12 bg-color">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 >
+                             Pessoas
+                        </h2>
+                    </div>
+                </div> 
+            </div>
+            <div id="card-body" class="card-body">
+                <div id="div-btn">
+                    <button id="btn-visualizar" type="button" class="btn btn-outline-info btn-menu ">Visualizar</button>
+                    <button id="btn-cadastrar" type="button" class="btn btn-outline-success btn-menu ">Cadastrar</button>
+                    <button id="btn-atualizar" type="button" class="btn btn-outline-warning btn-menu ">Atualizar</button>
+                    <button id="btn-limpar" type="button" class="btn btn-warning text-white btn-menu"> Limpar </button>
+                </div>
+                <div id="div-tabela" class="row hidden">
+                    <div class="col-md-12 mt-2 overflow">
+                        <table class="table">
+                            <thead>
+                                <tr class="bg-color text-white font-weight-bold">
+                                    <th> Nome </th>
+                                    <th> Data Admissão </th>
+                                    <th> Editar </th> 
+                                    <th> Excluir </th>
+                                </tr> 
+                            </thead>
+                            <tbody id="listagem-lancamentos">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="div-form-cadastrar">
+                    <div id="titulo-form">
+                        <strong class="text-danger">  Formulário </strong>
+                    </div>
+                    <form id="form-cadastro" action="" >
+                        <input id="pessoa_id" name="pessoa_id" type="hidden" disabled>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="txt-nome">Nome</label>
+                                <input id="txt-nome" name="nome" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="txt-cpf">CPF</label>
+                                <input id="txt-cpf" name="cpf" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="txt-rg">RG</label>
+                                <input id="txt-rg" name="rg" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="txt-funcao">Função</label>
+                                <input id="txt-funcao" name="funcao" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="dt-data-admissao">Data Admissão</label>
+                                <input id="dt-data-admissao" name="data_admissao" class="form-control" type="date"  required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dt-data-nascimento">Data Nascimento</label>
+                                <input id="dt-data-nascimento" name="data_nascimento" class="form-control" type="date" required />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
