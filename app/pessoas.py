@@ -3,12 +3,16 @@ from datetime import datetime
 
 #flask imports
 from flask import Blueprint, current_app, request, jsonify
-
+from flask import render_template
 #lib Imports
 from .serealizer import PessoasSchema
 from .model import Pessoas
 
 bp_pessoas = Blueprint("pessoas", __name__,)
+
+@bp_pessoas.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
 @bp_pessoas.route("/pessoas/", methods=["GET"])
 def get_pessoa():
@@ -21,7 +25,7 @@ def get_pessoa():
 def get_pessoa_by_name(pk):
     ps = PessoasSchema() 
     message_or_data, status_code = ( {"message":"Pessoa não encontrada!!"}, 404 )
-    pessoa = Pessoas.query.filter( Pessoas.id_pessoa == pk ).with_entities(Pessoas.id_pessoa, Pessoas.nome, Pessoas.data_admissao).first()
+    pessoa = Pessoas.query.filter( Pessoas.id_pessoa == pk ).first()
     if pessoa != None: 
         message_or_data, status_code = (  ps.jsonify(pessoa) , 200 )    
     return message_or_data, status_code 
@@ -32,7 +36,7 @@ def post_pessoa():
     pessoa = ps.load( request.json  ) 
     current_app.db.session.add(pessoa)
     current_app.db.session.commit()
-    return  ps.jsonify(pessoa), 201 
+    return  ps.jsonify(pessoa), 200 
 
 @bp_pessoas.route("/pessoas/<pk>/", methods=["PATCH"])
 def update_pessoa(pk):
@@ -40,13 +44,14 @@ def update_pessoa(pk):
     if Pessoas.query.filter(Pessoas.id_pessoa == pk).scalar() is not None :
         ps = PessoasSchema() 
         data["data_admissao"] = datetime.strptime( data["data_admissao"] ,"%Y-%m-%d")
+        data["data_nascimento"] = datetime.strptime( data["data_nascimento"] ,"%Y-%m-%d")
         query =  Pessoas.query.filter(Pessoas.id_pessoa == pk)
         affected = query.update(data) 
         message_or_data, status_code = ( {"message": "Não atualizado"}, 400 )
         if affected > 0:
             status_code = 200
             current_app.db.session.commit()
-            message_or_data = ps.jsonify( query.with_entities(Pessoas.id_pessoa, Pessoas.nome, Pessoas.data_admissao).first() )
+            message_or_data = ps.jsonify( query.first() )
     return message_or_data, status_code
     
 @bp_pessoas.route("/pessoas/<pk>/", methods=["DELETE"])
