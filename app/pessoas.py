@@ -1,3 +1,6 @@
+#python imports
+from datetime import datetime
+
 #flask imports
 from flask import Blueprint, current_app, request, jsonify
 
@@ -10,16 +13,18 @@ bp_pessoas = Blueprint("pessoas", __name__,)
 @bp_pessoas.route("/pessoas/", methods=["GET"])
 def get_pessoa():
     ps = PessoasSchema(many=True)
-    pessoas = Pessoas.query.all().with_entities(Pessoas.nome, Pessoas.data_admissao)
+    pessoas = Pessoas.query.with_entities(Pessoas.id_pessoa, Pessoas.nome, Pessoas.data_admissao).all()
     status_code = 200 if pessoas != [] else 404
     return  ps.jsonify(pessoas), status_code
 
-@bp_pessoas.route("/pessoas/<nome>/", methods=["GET"])
-def get_pessoa_by_id(nome):
+@bp_pessoas.route("/pessoas/<pk>/", methods=["GET"])
+def get_pessoa_by_name(pk):
     ps = PessoasSchema() 
-    pessoa = Pessoas.query.filter(Pessoas.nome == nome).with_entities(Pessoas.nome, Pessoas.data_admissao).first()
-    message, status_code = (  pessoa, 200 ) if pessoa != None else ( {"Pessoa não encontrada!!"}, 404 )
-    return ps.jsonify(message), status_code 
+    message_or_data, status_code = ( {"message":"Pessoa não encontrada!!"}, 404 )
+    pessoa = Pessoas.query.filter( Pessoas.id_pessoa == pk ).with_entities(Pessoas.id_pessoa, Pessoas.nome, Pessoas.data_admissao).first()
+    if pessoa != None: 
+        message_or_data, status_code = (  ps.jsonify(pessoa) , 200 )    
+    return message_or_data, status_code 
     
 @bp_pessoas.route("/pessoas/", methods=["POST"])
 def post_pessoa():
@@ -31,16 +36,20 @@ def post_pessoa():
 
 @bp_pessoas.route("/pessoas/<pk>/", methods=["PATCH"])
 def update_pessoa(pk):
-    ps = PessoasSchema()
-    query =  Pessoas.query.filter(Pessoas.id_pessoa == pk)
-    print(
-        query
-    )
-    query.update(request.json)
-    current_app.db.session.commit()
-    return ps.jsonify( query.first() )
+    status_code, data, message_or_data = ( 404, request.json, "Não encontrado" )
+    if Pessoas.query.filter(Pessoas.id_pessoa == pk).scalar() is not None :
+        ps = PessoasSchema() 
+        data["data_admissao"] = datetime.strptime( data["data_admissao"] ,"%Y-%m-%d")
+        query =  Pessoas.query.filter(Pessoas.id_pessoa == pk)
+        affected = query.update(data) 
+        message_or_data, status_code = ( {"message": "Não atualizado"}, 400 )
+        if affected > 0:
+            status_code = 200
+            current_app.db.session.commit()
+            message_or_data = ps.jsonify( query.with_entities(Pessoas.id_pessoa, Pessoas.nome, Pessoas.data_admissao).first() )
+    return message_or_data, status_code
     
-@bp_pessoas.route("/pessoas/<id>/", methods=["DELETE"])
+@bp_pessoas.route("/pessoas/<pk>/", methods=["DELETE"])
 def delete_pessoa(pk):
     pessoa = Pessoas.query.filter(Pessoas.id_pessoa == pk)
     affected = pessoa.delete()
