@@ -19,9 +19,8 @@ Caso esteja utilizando windows troque o python3 por python.
 - No caso do linux, ative a venv com source venv/bin/activate
 - No caso do windows, ative a venv com venv/Scripts/Activate
 - Execute o comando pip install -r requirements.txt
-- Execute o comando python manage.py makemigrations
-- Execute o comando python manage.py migrate
-- Execute o comando python3 manage.py runserver
+- Execute o comando flask run
+
 
 ## End-Points - Pessoas :
 - End-Point
